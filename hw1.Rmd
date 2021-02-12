@@ -30,6 +30,8 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ```{r load_libraries}
 library(ISLR)
+library(MASS) 
+library(class)
 ```
 ###Chapter 3 
 ####Q5
@@ -313,5 +315,71 @@ which can be simplified as,
 For KNN test, if K = 1, the training error should always be 0 and since the average error is 18%, the actually test error should be 36%, which is greatly than the 30% test error of logistic regression. Thus, we should use logistic regression for this dataset rather than KNN with K =1. 
 
 ####Q10
+##### (a) Produce some numerical and graphical summaries of the Weekly data. Do there appear to be any patterns?
+```{r}
+names(Weekly)
+```
+```{r}
+pairs(Weekly)
+```
+```{r}
+cor(Weekly[,-9])
+```
+According to the correlations matrix, only Year and Volume have strong correlation. There are only weak relationships between the Lag variables.
+##### (b) Use the full data set to perform a logistic regression with Direction as the response and the five lag variables plus Volume as predictors. Use the summary function to print the results. Do any of the predictors appear to be statistically significant? If so, which ones?
+```{r}
+glm.fit = glm(Direction ~ .-Year-Today, data=Weekly, family=binomial)
+summary(glm.fit)
+```
+Lag2 is the statistically significant predictor, with p-value of 0.0296.
+##### (c) Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression.
+```{r}
+glm.fit.probs = predict(glm.fit, type = "response")
+glm.fit.pred = rep("Down", length(Weekly$Direction))
+glm.fit.pred[glm.fit.probs > 0.5] = "Up"
+table(glm.fit.pred, Weekly$Direction)
+mean(glm.fit.pred == Weekly$Direction)
+```
+We only have an accuracy of 56.1%, we predict UP more often than Down. The model doesn't predict the negative class well.
+##### (d) Now fit the logistic regression model using a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010).
+```{r}
+train = Weekly$Year <= 2008
+test = !train
+glm.fit = glm(Direction ~ Lag2, data=Weekly, family=binomial, subset=train)
+glm.fit.prob = predict(glm.fit, Weekly[test, ], type="response")
+glm.fit.pred = rep("Down", length(Weekly$Direction[test]))
+glm.fit.pred[glm.fit.prob > 0.5] = "Up"
+table(glm.pred, Weekly$Direction[test])
+mean(glm.pred == Weekly$Direction[test])
+```
+
+##### (e) Repeat (d) using LDA.
+```{r}
+lda.fit = lda(Direction ~ Lag2, data=Weekly, subset=train)
+lda.pred = predict(lda.fit, Weekly[test,])$class
+table(lda.pred, Weekly$Direction[test])
+mean(lda.pred == Weekly$Direction[test])
+```
+
+##### (f) Repeat (d) using QDA.
+```{r}
+qda.fit = qda(Direction ~ Lag2, data=Weekly, subset=train)
+qda.pred = predict(qda.fit, Weekly[test,])$class
+table(qda.pred, Weekly$Direction[test])
+mean(qda.pred == Weekly$Direction[test])
+```
+
+##### (g) Repeat (d) using KNN with K = 1.
+```{r}
+set.seed(1)
+knn.pred = knn(data.frame(Weekly$Lag2[train]), data.frame(Weekly$Lag2[test]), Weekly$Direction[train], k=1)
+table(knn.pred, Weekly$Direction[test])
+mean(knn.pred == Weekly$Direction[test])
+```
+
+##### (h) Which of these methods appears to provide the best results on this data?
+"Logistic regression" and "LDA" have the test accuracy of 0.625 that provide the best results on this data.
+
+##### (i) Experiment with different combinations of predictors, including possible transformations and interactions, for each of the methods. Report the variables, method, and associated confusion matrix that appears to provide the best results on the held out data. Note that you should also experiment with values for K in the KNN classifier.
 
 ####Q11

@@ -334,8 +334,8 @@ glm.fit = glm(Direction ~ Lag2, data=Weekly, family=binomial, subset=train)
 glm.fit.prob = predict(glm.fit, Weekly[test, ], type="response")
 glm.fit.pred = rep("Down", length(Weekly$Direction[test]))
 glm.fit.pred[glm.fit.prob > 0.5] = "Up"
-table(glm.pred, Weekly$Direction[test])
-mean(glm.pred == Weekly$Direction[test])
+table(glm.fit.pred, Weekly$Direction[test])
+mean(glm.fit.pred == Weekly$Direction[test])
 ```
 
 ##### (e) Repeat (d) using LDA.

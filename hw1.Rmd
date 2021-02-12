@@ -3,7 +3,7 @@ title: "HW1"
 author: "Kunyu An"
 date: "2/12/2021"
 output:
-  html_document:
+  pdf_document:
     df_print: paged
 ---
 
@@ -30,8 +30,8 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```{r load_libraries}
 library(ISLR)
 ```
-
-### Problem 5
+###Chapter 3 
+####Q5
 
 we want to show that $\hat{y}_{i} = \sum_{i'=1}^n a_{i'}y_{i'}$. Given that $\hat{\beta} = (\sum_{i=1}^n x_{i}y_{i})/(\sum_{i'=1}^n x_{i'}^2) $, we have
 
@@ -46,10 +46,31 @@ Let $a_{i'} = C_{i'}x_{i}$, we get,
 
 <center>$\hat{y}_{i} = \sum_{i=1}^n C_{i'}x_{i}y_{i} =  \sum_{i'=1}^n a_{i'}y_{i'}$</center>
 
-###Problem 6
+####Q6
 
 For simple linear regression, $\hat{y} = \hat{\beta_{0}}+ \hat{\beta_{1}} x$. According to (3.4), $\hat{\beta_{0}} = \bar{y} - \hat{\beta_{1}} \bar{x}$.Thus, we have,
 
 <center>$\hat{y} = \bar{y} - \hat{\beta_{1}} \bar{x} + \hat{\beta_{1}} x =  \bar{y} - \hat{\beta_{1}}(x-\bar{x})$</center>
 
 Let $x = \bar{x}$, we get $\hat{y} = \bar{y}$. Thus, we can say that  the least squares line always passes through the point $(\bar{x},\bar{y})$.
+
+###Chapter 4
+####Q1
+We can start with the logistic function representation,
+
+<center>$p(X) = \frac{e^{\beta_{0}+\beta_{1}^X}}{1+e^{\beta_{0}+\beta_{1}^X}}$</center>
+
+Multiplying both side by ${1+e^{\beta_{0}+\beta_{1}^X}$, we get
+
+<center>$e^{\beta_{0}+\beta_{1}^X} = p(X)(1+e^{\beta_{0}+\beta_{1}^X)} = p(X) + p(X)e^{\beta_{0}+\beta_{1}^X}$</center>
+
+By subtract $p(X)e^{\beta_{0}+\beta_{1}^X}$ on both side, we get
+
+<center>$e^{\beta_{0}+\beta_{1}^X}-p(X)e^{\beta_{0}+\beta_{1}^X} = e^{\beta_{0}+\beta_{1}^X}(1-p(X)) = p(X)$</center>
+
+which can be simplified as,
+
+<center>$\frac{p(X)}{1-p(X)} = e^{\beta_{0}+\beta_{1}^X}$ (the logit representation)</center>
+
+####Q8
+For KNN test, if K = 1, the training error should always be 0 and since the average error is 18%, the actually test error should be 36%, which is greatly than the 30% test error of logistic regression. Thus, we should use logistic regression for this dataset rather than KNN with K =1. 

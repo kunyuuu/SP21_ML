@@ -1,30 +1,15 @@
 <<<<<<< HEAD
 ---
-title: "HW1"
+title: "PH.140.644_HW1"
 author: "Kunyu An"
-date: "2/12/2021"
 output:
   pdf_document:
-    df_print: paged
+    toc: yes
+    toc_depth: 2
 ---
 
 ```{r setup, include=FALSE}
-library(tidyverse)
-library(viridis)
-knitr::opts_chunk$set(
-	echo = TRUE,
-	warning = FALSE,
-	fig.width = 8, 
-  fig.height = 6,
-  out.width = "90%"
-)
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-scale_colour_discrete = scale_colour_viridis_d
-scale_fill_discrete = scale_fill_viridis_d
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 
@@ -315,3 +300,121 @@ For KNN test, if K = 1, the training error should always be 0 and since the aver
 ####Q10
 
 ####Q11
+a. Create a binary variable, `mpg01`, that contains a 1 if `mpg` contains a value above its median, and a 0 if `mpg` contains a value below its median. You can compute the median using the `median()` function. Note you may find it helpful to use the `data.frame()` function to create a single data set containing both `mpg01` and the other `Auto` variables.
+```{r}
+library(ISLR)
+attach(Auto)
+mpg01 = rep(0, length(mpg))
+mpg01[mpg > median(mpg)] = 1
+Auto = data.frame(Auto, mpg01)
+head(Auto)
+```
+
+b.Explore the data graphically in order to investigate the association between `mpg01` and the other features. Which of the other features seem most likely to be useful in predicting `mpg01`? Scatterplots and boxplots may be useful tools to answer this question. Describe your findings.
+
+We first can plot the boxplots for each variable.
+```{r}
+par(mfrow = c(2, 3))
+plot(factor(mpg01), cylinders, xlab = "mpg01", ylab = "engine cylinders")
+plot(factor(mpg01), displacement, xlab = "mpg01",ylab = "Engine displacement")
+plot(factor(mpg01), horsepower,xlab = "mpg01",ylab = "Horsepower")
+plot(factor(mpg01), weight, xlab = "mpg01",ylab = "Weight")
+plot(factor(mpg01), acceleration, xlab = "mpg01",ylab = "acceleration")
+plot(factor(mpg01), year, xlab = "mpg01", ylab = "Manufacture year")
+mtext("Boxplots", outer = TRUE, line = -1.5)
+```
+According the boxplots above, we can see that the predictor `cylinders`,`displacement`,`horsepower` and `weight`are strongly associate with `mpg01`.
+
+Then we can plot the scartterplox for more information.
+```{r}
+par(mfrow = c(2, 3))
+plot(mpg01,cylinders, xlabel = "mpg01",ylab = "engine cylinders")
+plot(mpg01,displacement,xlabel = "mpg01",ylab = "Engine displacement")
+plot(mpg01,horsepower,xlabel = "mpg01",ylab = "Horsepower")
+plot(mpg01,weight, xlabel = "mpg01",ylab = "Weight")
+plot(mpg01,acceleration, xlabel = "mpg01",ylab = "accelaration")
+plot(mpg01,year,xlabel = "mpg01",ylab = "Manufacture year")
+mtext("Scatterplots", outer = TRUE, line = -1.5)
+```
+
+From the scatterplot above, the predictor`displacement`, `horsepower` and `weight` seem to be good variables to predict `mpg01`.
+
+**To sum up, `cylinder`,`displacement`, `horsepower` and `weight` are the strongest variable to predict `mpg0`.**
+
+c.Split the data into a training set and a test set.
+
+Split the Auto data set into 75% trainning sample and 25% testing sample with no replacement.
+```{r}
+set.seed(1) 
+index = sample.int(n = nrow(Auto), size = floor(.75*nrow(Auto)), replace = F)
+train = Auto[index, ]
+test  = Auto[-index, ]
+```
+
+d.Perform LDA
+
+```{r}
+library(MASS)
+lda.fit = lda(mpg01~cylinders+weight+displacement+horsepower,data = Auto,subset = index)
+lda_pred = predict(lda.fit, test)
+mean(lda_pred$class != Auto[-index, "mpg01"])
+```
+The test error of LDA is 13.27%
+
+e.Perform QDA
+```{r}
+library(MASS)
+qda.fit = qda(mpg01~cylinders+weight+displacement+horsepower,data = Auto,subset = index)
+qda_pred = predict(qda.fit, test)
+mean(qda_pred$class != Auto[-index, "mpg01"])
+```
+The test error of QDA is 12.24%
+
+f.Perform logistic regression
+```{r}
+glm.fit = glm(mpg01 ~ cylinders + weight + displacement + horsepower, data = Auto, family = binomial, subset = index)
+glm.probs = predict(glm.fit, test, type = "response")
+glm.pred = rep(0, length(glm.probs))
+glm.pred[glm.probs > 0.5] = 1
+mean(glm.pred != Auto[-index, "mpg01"])
+```
+The test error for logistic regression is 10.20%
+
+g. Perform KNN with several values of K.
+
+First try k = 1.
+```{r}
+library(class)
+standardized.X=scale(Auto[, -c(8, 9, 10)])
+col = c("cylinders", "displacement", "horsepower", "weight")
+train.X=standardized.X[index , col]
+test.X=standardized.X[-index , col]
+train.Y = Auto[index, "mpg01"]
+set.seed(1)
+knn.pred = knn(train.X, test.X, train.Y, k = 1)
+mean(knn.pred != Auto[-index, "mpg01"])
+```
+The test error for knn when k = 1 is 10.20%
+
+Then we can try k = 3.
+```{r}
+knn.pred = knn(train.X, test.X, train.Y, k = 3)
+mean(knn.pred != Auto[-index, "mpg01"])
+```
+The test error for knn when k = 3 is 13.27%
+
+Then try k = 5.
+```{r}
+knn.pred = knn(train.X, test.X, train.Y, k = 5)
+mean(knn.pred != Auto[-index, "mpg01"])
+```
+The test error for knn when k = 5 is 14.29%
+
+Try k = 10
+```{r}
+knn.pred = knn(train.X, test.X, train.Y, k = 10)
+mean(knn.pred != Auto[-index, "mpg01"])
+```
+The test error for knn when k = 10 is 12.24%
+
+K = 1 works better for KNN.

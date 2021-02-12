@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 title: "PH.140.644_HW1"
 author: "Kunyu An"
@@ -6,10 +5,10 @@ output:
   pdf_document:
     toc: yes
     toc_depth: 2
-    include:
-      in_header:header.tex
-    keep_tex:yes
-    latex_engine:xelatex
+  html_document:
+    toc: yes
+    toc_depth: '2'
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -22,8 +21,8 @@ library(ISLR)
 library(MASS) 
 library(class)
 ```
-###Chapter 3 
-####Q5
+### Chapter 3 
+#### Q5
 
 we want to show that $\hat{y}_{i} = \sum_{i'=1}^n a_{i'}y_{i'}$. Given that $\hat{\beta} = (\sum_{i=1}^n x_{i}y_{i})/(\sum_{i'=1}^n x_{i'}^2) $, we have
 
@@ -38,7 +37,7 @@ Let $a_{i'} = C_{i'}x_{i}$, we get,
 
 <center>$\hat{y}_{i} = \sum_{i=1}^n C_{i'}x_{i}y_{i} =  \sum_{i'=1}^n a_{i'}y_{i'}$</center>
 
-####Q6
+#### Q6
 
 For simple linear regression, $\hat{y} = \hat{\beta_{0}}+ \hat{\beta_{1}} x$. According to (3.4), $\hat{\beta_{0}} = \bar{y} - \hat{\beta_{1}} \bar{x}$.Thus, we have,
 
@@ -46,11 +45,12 @@ For simple linear regression, $\hat{y} = \hat{\beta_{0}}+ \hat{\beta_{1}} x$. Ac
 
 Let $x = \bar{x}$, we get $\hat{y} = \bar{y}$. Thus, we can say that  the least squares line always passes through the point $(\bar{x},\bar{y})$.
 
-####Q9
+#### Q9
 a. Produce a scatterplot matrix which includes all of the variables in the data set.
 ```{r}
 pairs(Auto)
 ```
+
 b. Compute the matrix of correlations between the variables using the function cor(). You will need to exclude the name variable, which is qualitative.
 ```{r}
 names(Auto)
@@ -65,10 +65,15 @@ fit_mpg <- lm(mpg~., data=new_data)
 summary(fit_mpg)
 ```
 *i. *Is there a relationship between the predictors and the response?
+
 **Yes. Because F-static is large and p-value is small, we can say there is there a relationship between the predictors and the response.**
+
 *ii.* Which predictors appear to have a statistically significant relationship to the response?
+
 **Year, weight, origin and displacement appear to have a statistically significant relationship to the response.**
+
 *iii. *What does the coefficient for the year variable suggest?
+
 **The positive coefficient for year indicates year and mpg have the same trend. In other words, we can get larger value of mpg with larger value of year.**
 
 d. Use the plot() function to produce diagnostic plots of the linear regression fit. Comment on any problems you see with the fit. Do the residual plots suggest any unusually large outliers? Does the leverage plot identify any observations with unusually high leverage?
@@ -85,7 +90,7 @@ e. Use the * and : symbols to fit linear regression models with interaction effe
 f. Try a few different transformations of the variables, such as log(X), √X, X2. Comment on your findings.
 
 
-####Q15
+#### Q15
 This problem involves the Boston data set. We will now try to predict per capita crime rate using the other variables in this data set. In other words, per capita crime rate is the response, and the other variables are the predictors.
 
 a. For each predictor, fit a simple linear regression model to predict the response.
@@ -204,6 +209,7 @@ x = c(coefficients(fit_zn)[2],
 y = coefficients(fit_multi)[2:14]
 plot(x, y)
 ```
+
 **From the figure above, we can see that there are differences between simple and multiple regression coefficients. The simple linear regression only being affected by a single variable but the multiple regression is affected by the average effect of multiple variables**
 
 d. Is there evidence of non-linear association between any of the predictors and the response? To answer this question, for each predictor X, fit a model of the form $Y = \beta_{0} + \beta_{1}X + \beta_{2}X^2 + \beta_{3}X^3 + \epsilon $.
@@ -282,8 +288,8 @@ For the predictor "medv", the p value of both quadratic and cubic coefficient is
 
 **To sum up, for variables “zn”, “rm”, “rad”, “tax” and “lstat”, their p-values suggest that the cubic coefficient is not statistically significant.For “indus”, “nox”, “age”, “dis”, “ptratio” and “medv”, their p-values suggest there's strong evidence to show a nonlinear association; for the variable “black”, the p-values suggest that both quandratic and cubic coefficients are not statistically significant and thus there is no nonlinear association.**
 
-###Chapter 4
-####Q1
+### Chapter 4
+#### Q1
 We can start with the logistic function representation,
 
 <center>$p(X) = \frac{e^{\beta_{0}+\beta_{1}^X}}{1+e^{\beta_{0}+\beta_{1}^X}}$</center>
@@ -300,10 +306,10 @@ which can be simplified as,
 
 <center>$\frac{p(X)}{1-p(X)} = e^{\beta_{0}+\beta_{1}^X}$ (the logit representation)</center>
 
-####Q8
+#### Q8
 For KNN test, if K = 1, the training error should always be 0 and since the average error is 18%, the actually test error should be 36%, which is greatly than the 30% test error of logistic regression. Thus, we should use logistic regression for this dataset rather than KNN with K =1. 
 
-####Q10
+#### Q10
 a. Produce some numerical and graphical summaries of the Weekly data. Do there appear to be any patterns?
 ```{r}
 names(Weekly)
@@ -314,13 +320,15 @@ pairs(Weekly)
 ```{r}
 cor(Weekly[,-9])
 ```
-According to the correlations matrix, only Year and Volume have strong correlation. There are only weak relationships between the Lag variables.
+**According to the correlations matrix, only Year and Volume have strong correlation. There are only weak relationships between the Lag variables.**
+
 b. Use the full data set to perform a logistic regression with Direction as the response and the five lag variables plus Volume as predictors. Use the summary function to print the results. Do any of the predictors appear to be statistically significant? If so, which ones?
 ```{r}
 glm.fit = glm(Direction ~ .-Year-Today, data=Weekly, family=binomial)
 summary(glm.fit)
 ```
-Lag2 is the statistically significant predictor, with p-value of 0.0296.
+**Lag2 is the statistically significant predictor, with p-value of 0.0296.**
+
 c. Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression.
 ```{r}
 glm.fit.probs = predict(glm.fit, type = "response")
@@ -329,7 +337,8 @@ glm.fit.pred[glm.fit.probs > 0.5] = "Up"
 table(glm.fit.pred, Weekly$Direction)
 mean(glm.fit.pred == Weekly$Direction)
 ```
-We only have an accuracy of 56.1%, we predict UP more often than Down. The model doesn't predict the negative class well.
+**We only have an accuracy of 56.1%, we predict UP more often than Down. The model doesn't predict the negative class well.**
+
 d. Now fit the logistic regression model using a training data period from 1990 to 2008, with Lag2 as the only predictor. Compute the confusion matrix and the overall fraction of correct predictions for the held out data (that is, the data from 2009 and 2010).
 ```{r}
 train = Weekly$Year <= 2008
@@ -358,7 +367,7 @@ table(qda.pred, Weekly$Direction[test])
 mean(qda.pred == Weekly$Direction[test])
 ```
 
-g Repeat (d) using KNN with K = 1.
+g. Repeat (d) using KNN with K = 1.
 ```{r}
 set.seed(1)
 knn.pred = knn(data.frame(Weekly$Lag2[train]), data.frame(Weekly$Lag2[test]), Weekly$Direction[train], k=1)
@@ -367,11 +376,12 @@ mean(knn.pred == Weekly$Direction[test])
 ```
 
 h. Which of these methods appears to provide the best results on this data?
-"Logistic regression" and "LDA" have the test accuracy of 0.625 that provide the best results on this data.
+
+**"Logistic regression" and "LDA" have the test accuracy of 0.625 that provide the best results on this data.**
 
 i. Experiment with different combinations of predictors, including possible transformations and interactions, for each of the methods. Report the variables, method, and associated confusion matrix that appears to provide the best results on the held out data. Note that you should also experiment with values for K in the KNN classifier.
 
-####Q11
+#### Q11
 a. Create a binary variable, `mpg01`, that contains a 1 if `mpg` contains a value above its median, and a 0 if `mpg` contains a value below its median. You can compute the median using the `median()` function. Note you may find it helpful to use the `data.frame()` function to create a single data set containing both `mpg01` and the other `Auto` variables.
 ```{r}
 library(ISLR)

@@ -54,6 +54,45 @@ For simple linear regression, $\hat{y} = \hat{\beta_{0}}+ \hat{\beta_{1}} x$. Ac
 
 Let $x = \bar{x}$, we get $\hat{y} = \bar{y}$. Thus, we can say that  the least squares line always passes through the point $(\bar{x},\bar{y})$.
 
+#### Q9
+(a) Produce a scatterplot matrix which includes all of the variables in the data set.
+```{r}
+pairs(Auto)
+```
+(b) Compute the matrix of correlations between the variables using the function cor(). You will need to exclude the name variable, which is qualitative.
+```{r}
+names(Auto)
+```
+```{r}
+new_data = Auto[1:8]
+cor(new_data)
+```
+(c) Use the lm() function to perform a multiple linear regression with mpg as the response and all other variables except name as the predictors. Use the summary() function to print the results. Comment on the output. For instance:
+```{r}
+fit_mpg <- lm(mpg~., data=new_data)
+summary(fit_mpg)
+```
+##### i. Is there a relationship between the predictors and the response?
+Yes. Because F-static is large and p-value is small, we can say there is there a relationship between the predictors and the response.
+##### ii. Which predictors appear to have a statistically significant relationship to the response?
+Year, weight, origin and displacement appear to have a statistically significant relationship to the response.
+##### iii. What does the coefficient for the year variable suggest?
+The positive coefficient for year indicates year and mpg have the same trend. In other words, we can get larger value of mpg with larger value of year.
+
+#### (d) Use the plot() function to produce diagnostic plots of the linear regression fit. Comment on any problems you see with the fit. Do the residual plots suggest any unusually large outliers? Does the leverage plot identify any observations with unusually high leverage?
+```{r}
+par(mfrow=c(2,2))
+plot(fit_mpg)
+```
+Point 320, point 323 and point 327 have unusually large residual.
+Point 14 has unusually high leverage. 
+
+##### (e) Use the * and : symbols to fit linear regression models with interaction effects. Do any interactions appear to be statistically significant?
+
+
+##### (f) Try a few different transformations of the variables, such as log(X), √X, X2. Comment on your findings.
+
+
 ###Chapter 4
 ####Q1
 We can start with the logistic function representation,

@@ -54,6 +54,205 @@ For simple linear regression, $\hat{y} = \hat{\beta_{0}}+ \hat{\beta_{1}} x$. Ac
 
 Let $x = \bar{x}$, we get $\hat{y} = \bar{y}$. Thus, we can say that  the least squares line always passes through the point $(\bar{x},\bar{y})$.
 
+####Q9
+
+####Q15
+This problem involves the Boston data set. We will now try to predict per capita crime rate using the other variables in this data set. In other words, per capita crime rate is the response, and the other variables are the predictors.
+
+a. For each predictor, fit a simple linear regression model to predict the response.
+
+We first launch our dataset and take a first look of our dataset.
+```{r}
+library(MASS)
+attach(Boston)
+head(Boston)
+```
+
+```{r}
+fit_zn = lm(crim~zn, data = Boston)
+summary(fit_zn)
+```
+For the predictor "zn", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "zn" and "crim".
+
+```{r}
+fit_indus = lm(crim~indus, data = Boston)
+summary(fit_indus)
+```
+For the predictor "indus", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "indus" and "crim".
+
+```{r}
+fit_chas = lm(crim~chas, data = Boston)
+summary(fit_chas)
+```
+For the predictor "chas", the p value 0.209 is greater than 0.05, that means we *do not have* enough evidence to conclude there's statistically significant association between "chas" and "crim".
+
+```{r}
+fit_nox = lm(crim~nox, data = Boston)
+summary(fit_nox)
+```
+For the predictor "nox", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "nox" and "crim".
+
+```{r}
+fit_rm = lm(crim~rm, data = Boston)
+summary(fit_rm)
+```
+For the predictor "rm", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "rm" and "crim".
+
+```{r}
+fit_age = lm(crim~age, data = Boston)
+summary(fit_age)
+```
+For the predictor "age", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "age" and "crim".
+
+```{r}
+fit_dis = lm(crim~dis, data = Boston)
+summary(fit_dis)
+```
+For the predictor "dis", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "dis" and "crim".
+
+```{r}
+fit_rad = lm(crim~rad, data = Boston)
+summary(fit_rad)
+```
+For the predictor "rad", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "rad" and "crim".
+
+```{r}
+fit_tax = lm(crim~tax, data = Boston)
+summary(fit_tax)
+```
+For the predictor "tax", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "tax" and "crim".
+
+```{r}
+fit_ptratio = lm(crim~ptratio, data = Boston)
+summary(fit_ptratio)
+```
+For the predictor "ptratio", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "ptratio" and "crim".
+
+```{r}
+fit_black = lm(crim~black, data = Boston)
+summary(fit_black)
+```
+For the predictor "black", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "black" and "crim".
+
+```{r}
+fit_lstat = lm(crim~lstat, data = Boston)
+summary(fit_lstat)
+```
+For the predictor "lstat", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "lstat" and "crim".
+
+```{r}
+fit_medv = lm(crim~medv, data = Boston)
+summary(fit_medv)
+```
+For the predictor "medv", the p value is less than 0.05, that means we have strong evidence that there's statistically significant association between "medv" and "crim".
+
+**To sum up, all the variables, except the "chas", have statistically significant association with the respond "crim".**
+
+b. Fit a multiple regression model to predict the response using all of the predictors. Describe your results.
+
+```{r}
+fit_multi = lm(crim ~ ., data = Boston)
+summary(fit_multi)
+```
+**According to the p values shown above, only "zn", "dis", "rad", "black" and "medv" have strong evidence to reject the null hypothesis since their p values are less than 0.05.**
+
+c. How do your results from (a) compare to your results from (b)? Create a plot displaying the univariate regression coefficients from (a) on the x-axis, and the multiple regression coefficients from (b) on the y-axis. That is, each predictor is displayed as a single point in the plot. Its coefficient in a simple linear regres- sion model is shown on the x-axis, and its coefficient estimate in the multiple linear regression model is shown on the y-axis.
+
+```{r}
+x = c(coefficients(fit_zn)[2],
+      coefficients(fit_indus)[2],
+      coefficients(fit_chas)[2],
+      coefficients(fit_nox)[2],
+      coefficients(fit_rm)[2],
+      coefficients(fit_age)[2],
+      coefficients(fit_dis)[2],
+      coefficients(fit_rad)[2],
+      coefficients(fit_tax)[2],
+      coefficients(fit_ptratio)[2],
+      coefficients(fit_black)[2],
+      coefficients(fit_lstat)[2],
+      coefficients(fit_medv)[2])
+y = coefficients(fit_multi)[2:14]
+plot(x, y)
+```
+**From the figure above, we can see that there are differences between simple and multiple regression coefficients. The simple linear regression only being affected by a single variable but the multiple regression is affected by the average effect of multiple variables**
+
+d.Is there evidence of non-linear association between any of the predictors and the response? To answer this question, for each predictor X, fit a model of the form $Y = \beta_{0} + \beta_{1}X + \beta_{2}X^2 + \beta_{3}X^3 + \epsilon $.
+
+```{r}
+fit_zn = lm(crim~poly(zn,3), data = Boston)
+summary(fit_zn)
+```
+For the predictor "zn", the p value of quadratic coefficient is less than 0.05 but p values the cubic coefficient is greater than 0.05. That means there's a nonlinear association between "zn" and "crim" but the evidence is not strong.
+
+```{r}
+fit_indus = lm(crim~poly(indus,3), data = Boston)
+summary(fit_indus)
+```
+For the predictor "indus", the p value of both quadratic and cubic coefficient is less than 0.05. That means there's strong evidence to show a nonlinear association between "indus" and "crim".
+
+```{r}
+fit_nox = lm(crim~poly(nox,3), data = Boston)
+summary(fit_nox)
+```
+For the predictor "nox", the p value of quadratic and cubic coefficient is less than 0.05. That means there's strong evidence to show a nonlinear association between "nox" and "crim".
+
+```{r}
+fit_rm = lm(crim~poly(rm,3), data = Boston)
+summary(fit_rm)
+```
+For the predictor "rm", the p value of quadratic coefficient is less than 0.05 but p values the cubic coefficient is greater than 0.05. That means there's a nonlinear association between "rm" and "crim" but the evidence is not strong.
+
+```{r}
+fit_age = lm(crim~poly(age,3), data = Boston)
+summary(fit_age)
+```
+For the predictor "age", the p value of both quadratic and cubic coefficient is less than 0.05. That means there's strong evidence to show a nonlinear association between "age" and "crim".
+
+```{r}
+fit_dis = lm(crim~poly(dis,3), data = Boston)
+summary(fit_dis)
+```
+For the predictor "dis", the p value of both quadratic and cubic coefficient is less than 0.05. That means there's strong evidence to show a nonlinear association between "dis" and "crim".
+
+```{r}
+fit_rad = lm(crim~poly(rad,3), data = Boston)
+summary(fit_rad)
+```
+For the predictor "rad", the p value of quadratic coefficient is less than 0.05 but p values the cubic coefficient is greater than 0.05. That means there's a nonlinear association between "rad" and "crim" but the evidence is not strong.
+
+```{r}
+fit_tax = lm(crim~poly(tax,3), data = Boston)
+summary(fit_tax)
+```
+For the predictor "tax", the p value of quadratic coefficient is less than 0.05 but p values the cubic coefficient is greater than 0.05. That means there's a nonlinear association between "tax" and "crim" but the evidence is not strong.
+
+```{r}
+fit_ptratio = lm(crim~poly(ptratio,3), data = Boston)
+summary(fit_ptratio)
+```
+For the predictor "ptratio", the p value of both quadratic and cubic coefficient is less than 0.05. That means there's strong evidence to show a nonlinear association between "ptratio" and "crim".
+
+```{r}
+fit_black = lm(crim~poly(black,3), data = Boston)
+summary(fit_black)
+```
+For the predictor "black", the p value of both quadratic and cubic coefficient is greater than 0.05. That means there's no enough evidence to conclude a nonlinear association between "black" and "crim".
+
+```{r}
+fit_lstat = lm(crim~poly(lstat,3), data = Boston)
+summary(fit_lstat)
+```
+For the predictor "lastat", the p value of quadratic coefficient is less than 0.05 but p values the cubic coefficient is greater than 0.05. That means there's a nonlinear association between "lstat" and "crim" but the evidence is not strong.
+
+```{r}
+fit_medv = lm(crim~poly(medv,3), data = Boston)
+summary(fit_medv)
+```
+For the predictor "medv", the p value of both quadratic and cubic coefficient is less than 0.05. That means there's strong evidence to show a nonlinear association between "medv" and "crim".
+
+**To sum up, for variables “zn”, “rm”, “rad”, “tax” and “lstat”, their p-values suggest that the cubic coefficient is not statistically significant.For “indus”, “nox”, “age”, “dis”, “ptratio” and “medv”, their p-values suggest there's strong evidence to show a nonlinear association; for the variable “black”, the p-values suggest that both quandratic and cubic coefficients are not statistically significant and thus there is no nonlinear association.**
+
 ###Chapter 4
 ####Q1
 We can start with the logistic function representation,
@@ -74,3 +273,7 @@ which can be simplified as,
 
 ####Q8
 For KNN test, if K = 1, the training error should always be 0 and since the average error is 18%, the actually test error should be 36%, which is greatly than the 30% test error of logistic regression. Thus, we should use logistic regression for this dataset rather than KNN with K =1. 
+
+####Q10
+
+####Q11

@@ -45,3 +45,11 @@ Since $\frac{x_{i}}{\sum_{i'=1}^n x_{i'}^2}$ is a constant for any i', we can re
 Let $a_{i'} = C_{i'}x_{i}$, we get,
 
 <center>$\hat{y}_{i} = \sum_{i=1}^n C_{i'}x_{i}y_{i} =  \sum_{i'=1}^n a_{i'}y_{i'}$</center>
+
+###Problem 6
+
+For simple linear regression, $\hat{y} = \hat{\beta_{0}}+ \hat{\beta_{1}} x$. According to (3.4), $\hat{\beta_{0}} = \bar{y} - \hat{\beta_{1}} \bar{x}$.Thus, we have,
+
+<center>$\hat{y} = \bar{y} - \hat{\beta_{1}} \bar{x} + \hat{\beta_{1}} x =  \bar{y} - \hat{\beta_{1}}(x-\bar{x})$</center>
+
+Let $x = \bar{x}$, we get $\hat{y} = \bar{y}$. Thus, we can say that  the least squares line always passes through the point $(\bar{x},\bar{y})$.

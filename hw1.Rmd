@@ -24,8 +24,8 @@ library(class)
 ```
 ### Chapter 3 
 #### Q5
-
-we want to show that $\hat{y}_{i} = \sum_{i'=1}^n a_{i'}y_{i'}$. Given that $\hat{\beta} = (\sum_{i=1}^n x_{i}y_{i})/(\sum_{i'=1}^n x_{i'}^2)$, we have
+<enter>
+We want to show that $\hat{y}_{i} = \sum_{i'=1}^n a_{i'}y_{i'}$. Given that $\hat{\beta} = (\sum_{i=1}^n x_{i}y_{i})/(\sum_{i'=1}^n x_{i'}^2)$, we have
 
 
 \[\makebox[\linewidth]{$\hat{y}_{i} = x_{i}\hat{\beta} = x_{i}\frac{\sum_{i=1}^n x_{i}y_{i}}{\sum_{i'=1}^n x_{i'}^2} = \frac{x_{i}}{\sum_{i'=1}^n x_{i'}^2}\sum_{i=1}^n x_{i}y_{i}$}\]
@@ -86,10 +86,19 @@ plot(fit_mpg)
 Point 14 has unusually high leverage.**
 
 e. Use the * and : symbols to fit linear regression models with interaction effects. Do any interactions appear to be statistically significant?
-
+```{r}
+lm.fit2 = lm(mpg~cylinders*displacement+displacement*weight, data=Auto)
+summary(lm.fit2)
+```
+According to the correlation matrix and the p-values, we can see that the interaction between displacement and weight is statistically significant, while the interaction between cylinders and displacement is not.
 
 f. Try a few different transformations of the variables, such as log(X), √X, X2. Comment on your findings.
 
+```{r}
+lm.fit3 = lm(mpg~log(weight)+sqrt(horsepower), data=Auto)
+summary(lm.fit3)
+```
+The variables log(weight), sqrt(horsepower) have statistical significance and have good performance in regression.
 
 #### Q15
 This problem involves the Boston data set. We will now try to predict per capita crime rate using the other variables in this data set. In other words, per capita crime rate is the response, and the other variables are the predictors.
@@ -381,6 +390,43 @@ h. Which of these methods appears to provide the best results on this data?
 **"Logistic regression" and "LDA" have the test accuracy of 0.625 that provide the best results on this data.**
 
 i. Experiment with different combinations of predictors, including possible transformations and interactions, for each of the methods. Report the variables, method, and associated confusion matrix that appears to provide the best results on the held out data. Note that you should also experiment with values for K in the KNN classifier.
+```{r}
+train = Weekly$Year <= 2008
+test = !train
+glm.fit = glm(Direction ~ Lag2:Lag1, data=Weekly, family=binomial, subset=train)
+glm.fit.prob = predict(glm.fit, Weekly[test, ], type="response")
+glm.fit.pred = rep("Down", length(Weekly$Direction[test]))
+glm.fit.pred[glm.fit.prob > 0.5] = "Up"
+table(glm.fit.pred, Weekly$Direction[test])
+mean(glm.fit.pred == Weekly$Direction[test])
+```
+```{r}
+lda.fit = lda(Direction ~ Lag2:Lag1, data=Weekly, subset=train)
+lda.pred = predict(lda.fit, Weekly[test,])$class
+table(lda.pred, Weekly$Direction[test])
+mean(lda.pred == Weekly$Direction[test])
+```
+```{r}
+set.seed(1)
+knn.pred = knn(data.frame(Weekly$Lag2[train]), data.frame(Weekly$Lag2[test]), Weekly$Direction[train], k=3)
+table(knn.pred, Weekly$Direction[test])
+mean(knn.pred == Weekly$Direction[test])
+```
+```{r}
+set.seed(1)
+knn.pred = knn(data.frame(Weekly$Lag2[train]), data.frame(Weekly$Lag2[test]), Weekly$Direction[train], k=9)
+table(knn.pred, Weekly$Direction[test])
+mean(knn.pred == Weekly$Direction[test])
+```
+```{r}
+set.seed(1)
+knn.pred = knn(data.frame(Weekly$Lag2[train]), data.frame(Weekly$Lag2[test]), Weekly$Direction[train], k=20)
+table(knn.pred, Weekly$Direction[test])
+mean(knn.pred == Weekly$Direction[test])
+```
+
+**The original LDA and logistic regression have better performance in terms of accuracy rate.**
+**Although we increase the value of k in KNN, the results don't change obviously.**
 
 #### Q11
 a. Create a binary variable, `mpg01`, that contains a 1 if `mpg` contains a value above its median, and a 0 if `mpg` contains a value below its median. You can compute the median using the `median()` function. Note you may find it helpful to use the `data.frame()` function to create a single data set containing both `mpg01` and the other `Auto` variables.

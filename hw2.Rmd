@@ -25,8 +25,25 @@ library(class)
 
 ### Chapter 5
 #### Q1
-
-
+\begin{equation}
+\begin{split}
+Var(\alpha X, (1-\alpha)Y)&=\alpha^{2}\sigma_{X}^{2}+2\alpha(1-\alpha)\sigma_{XY}+(1-\alpha)^{2}\sigma_{Y}^{2}\\
+&=(\sigma_{X}^{2}-2\sigma_{XY}+\sigma_{Y}^{2})\alpha^{2}+2(\sigma_{XY}-\sigma_{Y}^{2})\alpha+\sigma_{Y}^{2}
+\end{split}
+\end{equation}
+Let
+\begin{equation}
+\frac{\partial Var(\alpha X, (1-\alpha)Y)}{\partial \alpha}=2(\sigma_{X}^{2}-2\sigma_{XY}+\sigma_{Y}^{2})\alpha+2(\sigma_{XY}-\sigma_{Y}^{2})=0
+\end{equation}
+We have
+\begin{equation}
+\alpha = \frac{\sigma_{Y}^{2} - \sigma_{XY}}{\sigma_{X}^{2} + \sigma_{Y}^{2} - 2 \sigma_{XY}}    
+\end{equation}
+We also have
+\begin{equation}
+\frac{\partial^{2} Var(\alpha X, (1-\alpha)Y)}{\partial \alpha^{2}}=2(\sigma_{X}^{2}-2\sigma_{XY}+\sigma_{Y}^{2})\geq 0
+\end{equation}
+To sum up, when $\alpha = \frac{\sigma_{Y}^{2} - \sigma_{XY}}{\sigma_{X}^{2} + \sigma_{Y}^{2} - 2 \sigma_{XY}}$, $Var(\alpha X, (1-\alpha)Y)$ has minimum.
 
 #### Q3 
 We now review k-fold cross-validation.

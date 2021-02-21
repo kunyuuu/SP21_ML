@@ -1,0 +1,55 @@
+---
+title: "PH.140.644_HW2"
+author: "Kunyu An"
+output:
+  html_document:
+    toc_depth: '2'
+    df_print: paged
+  pdf_document:
+    toc_depth: 2
+    latex_engine : xelatex
+header-includes:
+- \usepackage{amsmath,latexsym,amsfonts,amsthm,cleveref}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+```{r load_libraries,include=FALSE}
+library(ISLR)
+library(MASS) 
+library(class)
+```
+
+### Chapter 5
+#### Q1
+
+
+
+#### Q3 
+We now review k-fold cross-validation.
+
+**a.**Explain how k-fold cross-validation is implemented.
+
+For k-fold cross validation, we first need to divide the sample randomly into k equal-size and non-overlapping groups. Then, every time we use one group as the validation set and the rest as a whole to be the training set. Finally we can compute the testing error by averaging over the statistics of interest in k experiments.
+
+**b.**what are the advantages and disadvantages of k-fold cross-
+validation relative to:
+
+*i. The validation set approach?*
+
+1. The k-fold cross validation has a much lower variability than the validation set approach. 
+
+2. All the data is used to both train and test model performance for k-fold CV.
+
+3. The validation set approach is much easier to understand and to preform. A model is only trained once and tested once. In k-fold CV, k models will be trained and tested.
+
+*ii. LOOCV?*
+
+1. k-fold cross validation is less computationally demanding then LOOCV.
+2. LOOCV has higher variance than k-fold CV.
+
+### Chapter 6
+#### Q1

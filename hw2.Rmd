@@ -24,6 +24,7 @@ library(class)
 ```
 
 ### Chapter 5
+
 #### Q1
 \begin{equation}
 \begin{split}
@@ -35,15 +36,15 @@ Let
 \begin{equation}
 \frac{\partial Var(\alpha X, (1-\alpha)Y)}{\partial \alpha}=2(\sigma_{X}^{2}-2\sigma_{XY}+\sigma_{Y}^{2})\alpha+2(\sigma_{XY}-\sigma_{Y}^{2})=0
 \end{equation}
-We have
+We have, 
 \begin{equation}
 \alpha = \frac{\sigma_{Y}^{2} - \sigma_{XY}}{\sigma_{X}^{2} + \sigma_{Y}^{2} - 2 \sigma_{XY}}    
 \end{equation}
-We also have
+Since we also have
 \begin{equation}
 \frac{\partial^{2} Var(\alpha X, (1-\alpha)Y)}{\partial \alpha^{2}}=2(\sigma_{X}^{2}-2\sigma_{XY}+\sigma_{Y}^{2})\geq 0
 \end{equation}
-To sum up, when $\alpha = \frac{\sigma_{Y}^{2} - \sigma_{XY}}{\sigma_{X}^{2} + \sigma_{Y}^{2} - 2 \sigma_{XY}}$, $Var(\alpha X, (1-\alpha)Y)$ has minimum.
+Therefore, when $\alpha = \frac{\sigma_{Y}^{2} - \sigma_{XY}}{\sigma_{X}^{2} + \sigma_{Y}^{2} - 2 \sigma_{XY}}$, $Var(\alpha X, (1-\alpha)Y)$ reaches its minimum.
 
 #### Q3 
 We now review k-fold cross-validation.
@@ -68,5 +69,26 @@ validation relative to:
 1. k-fold cross validation is less computationally demanding then LOOCV.
 2. LOOCV has higher variance than k-fold CV.
 
+#### Q5
+In Chapter 4, we used logistic regression to predict the probability of `default` using `income` and `balance` on the `Default` data set. We will now estimate the test error of this logistic regression model using the validation set approach. Do not forget to set a random seed before beginning your analysis.
+
+**a.** Fit a logistic regression model that uses `income` and `balance` to predict `default`.
+
+```{r}
+library(ISLR)
+attach(Default)
+set.seed(1)
+fit.glm = glm(default ~ income + balance, data = Default, family = "binomial")
+summary(fit.glm)
+```
+#### Q6
+
+
 ### Chapter 6
+
 #### Q1
+We perform best subset, forward stepwise, and backward stepwise selection on a single data set. For each approach, we obtain p + 1 models, containing 0, 1, 2, . . . , p predictors. Explain your answers:
+
+**(a).**Which of the three models with k predictors has the smallest training RSS?
+
+* The smallest training RSS will be for the model with best subset approach. 

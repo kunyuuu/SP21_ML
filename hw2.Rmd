@@ -2,12 +2,12 @@
 title: "PH.140.644_HW2"
 author: "Kunyu An"
 output:
-  html_document:
-    toc_depth: '2'
-    df_print: paged
   pdf_document:
     toc_depth: 2
     latex_engine : xelatex
+  html_document:
+    toc_depth: '2'
+    df_print: paged
 header-includes:
 - \usepackage{amsmath,latexsym,amsfonts,amsthm,cleveref}
 ---
@@ -23,9 +23,9 @@ library(MASS)
 library(class)
 ```
 
-### Chapter 5
+## Chapter 5
 
-#### Q1
+### Q1
 \begin{equation}
 \begin{split}
 Var(\alpha X, (1-\alpha)Y)&=\alpha^{2}\sigma_{X}^{2}+2\alpha(1-\alpha)\sigma_{XY}+(1-\alpha)^{2}\sigma_{Y}^{2}\\
@@ -46,7 +46,7 @@ Since we also have
 \end{equation}
 Therefore, when $\alpha = \frac{\sigma_{Y}^{2} - \sigma_{XY}}{\sigma_{X}^{2} + \sigma_{Y}^{2} - 2 \sigma_{XY}}$, $Var(\alpha X, (1-\alpha)Y)$ reaches its minimum.
 
-#### Q3 
+### Q3 
 We now review k-fold cross-validation.
 
 **a.**Explain how k-fold cross-validation is implemented.
@@ -69,7 +69,7 @@ validation relative to:
 1. k-fold cross validation is less computationally demanding then LOOCV.
 2. LOOCV has higher variance than k-fold CV.
 
-#### Q5
+### Q5
 In Chapter 4, we used logistic regression to predict the probability of `default` using `income` and `balance` on the `Default` data set. We will now estimate the test error of this logistic regression model using the validation set approach. Do not forget to set a random seed before beginning your analysis.
 
 **a.** Fit a logistic regression model that uses `income` and `balance` to predict `default`.
@@ -81,12 +81,71 @@ set.seed(1)
 fit.glm = glm(default ~ income + balance, data = Default, family = "binomial")
 summary(fit.glm)
 ```
-#### Q6
+**b.** Using the validation set approach, estimate the test error of this model. In order to do this, you must perform the following steps:
 
+*i. Split the sample set into a training set and a validation set.*
+```{r}
+smp_siz <- floor(0.7*nrow(Default))
+idx <- sample(seq_len(nrow(Default)),size = smp_siz)
+train<-Default[idx,]
+test<-Default[-idx,]
+```
+*ii. Fit a multiple logistic regression model using only the training observations.*
+```{r}
+fit.glm = glm(default ~ income + balance, data = train, family = "binomial")
+summary(fit.glm)
+```
+*iii. Obtain a prediction of default status for each individual in the validation set by computing the posterior probability of default for that individual, and classifying the individual to the* `default` *category if the posterior probability is greater than 0.5.*
+```{r}
+probs.glm=predict(fit.glm,newdata = test, type='response')
+pred.glm=rep('Yes',length(probs.glm))
+pred.glm[probs.glm<0.5]='No'
+```
+*iv. Compute the validation set error, which is the fraction of the observations in the validation set that are misclassified.*
+```{r}
+mean(pred.glm != test$default)
+```
 
-### Chapter 6
+**c.** Repeat the process in (b) three times, using three different splits of the observations into a training set and a validation set. Comment on the results obtained.
 
-#### Q1
+```{r}
+errors <- c()
+set.seed(1)
+for(i in 1:3){
+  smp_siz <- floor(0.7*nrow(Default))
+  idx <- sample(seq_len(nrow(Default)),size = smp_siz)
+  train <- Default[idx,]
+  test <- Default[-idx,]
+  fit.glm = glm(default ~ income + balance, data = train, family = "binomial")
+  probs.glm = predict(fit.glm,newdata = test, type='response')
+  pred.glm = rep('Yes',length(probs.glm))
+  pred.glm[probs.glm<0.5]='No'
+  errors[i] <- mean(pred.glm != test$default)
+}
+errors
+```
+**We can see that the validation set error varies as the training set varies but they are not very far away from each other.**
+
+**d.** Now consider a logistic regression model that predicts the prob- ability of `default` using `income`, `balance`, and a dummy variable for `student`. Estimate the test error for this model using the validation set approach. Comment on whether or not including a dummy variable for `student` leads to a reduction in the test error rate.
+```{r}
+smp_siz <- floor(0.7*nrow(Default))
+idx <- sample(seq_len(nrow(Default)),size = smp_siz)
+train <- Default[idx,]
+test <- Default[-idx,]
+fit.glm = glm(default ~ income + balance + student, data = train, family = "binomial")
+probs.glm = predict(fit.glm,newdata = test, type='response')
+pred.glm = rep('Yes',length(probs.glm))
+pred.glm[probs.glm<0.5]='No'
+mean(pred.glm != test$default)
+```
+**The error is very close to previous ones. Thus we can say that including a dummy variable for student does not lead to a reduction in the test error rate.**
+
+### Q6
+We continue to consider the use of a logistic regression model to predict the probability of `default` using `income` and `balance` on the `Default` data set. In particular, we will now compute estimates for the standard errors of the `income` and `balance` logistic regression coefficients in two different ways: (1) using the bootstrap, and (2) using the standard formula for computing the standard errors in the `glm()` function. Do not forget to set a random seed before beginning your analysis.
+
+## Chapter 6
+
+### Q1
 We perform best subset, forward stepwise, and backward stepwise selection on a single data set. For each approach, we obtain p + 1 models, containing 0, 1, 2, . . . , p predictors. Explain your answers:
 
 **(a).**Which of the three models with k predictors has the smallest training RSS?

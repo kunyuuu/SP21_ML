@@ -181,3 +181,105 @@ We perform best subset, forward stepwise, and backward stepwise selection on a s
 **(a).**Which of the three models with k predictors has the smallest training RSS?
 
 * The smallest training RSS will be for the model with best subset approach. 
+
+### Q9
+In this exercise, we will predict the number of applications received using the other variables in the `College` data set.
+
+**(a).** Split the data set into a training set and a test set.
+```{r}
+set.seed(1)
+library(ISLR)
+attach(College)
+smp_siz <- floor(0.7*nrow(College))
+idx <- sample(seq_len(nrow(College)),size = smp_siz)
+train <- College[idx,]
+test <- College[-idx,]
+```
+
+**(b).** Fit a linear model using least squares on the training set, and
+report the test error obtained.
+```{r}
+set.seed(1)
+fit.lm <- lm(Apps ~ ., data = train)
+lm.pred <- predict(fit.lm, test)
+(lm.mse <- mean((lm.pred - test$Apps)^2))
+```
+**The MSE is** `r lm.mse`
+
+**(c).** Fit a ridge regression model on the training set, with λ chosen
+by cross-validation. Report the test error obtained.
+```{r}
+library(glmnet)
+set.seed(1)
+train.mat = model.matrix(Apps~., data=train)
+test.mat = model.matrix(Apps~., data=test)
+grid = 10 ^ seq(4, -2, length=100)
+mod.ridge = cv.glmnet(train.mat, train[, "Apps"], alpha=0, lambda=grid, thresh=1e-12)
+lambda.best = mod.ridge$lambda.min
+lambda.best
+```
+**The best λ is**`r lambda.best`
+
+```{r}
+ridge.pred = predict(mod.ridge, newx=test.mat, s=lambda.best)
+ridge.mse<-mean((test[, "Apps"] - ridge.pred)^2)
+ridge.mse
+```
+**The test MSE is** `r ridge.mse`, **which is very close but smaller than the linear regression.**
+
+**(d).**
+Fit a lasso model on the training set, with λ chosen by cross- validation. Report the test error obtained, along with the number of non-zero coefficient estimates.
+```{r}
+mod.lasso = cv.glmnet(train.mat, train[, "Apps"], alpha=1, lambda=grid, thresh=1e-12,nfolds = 5,standardize = TRUE)
+lambda.best = mod.lasso$lambda.min
+print(lambda.best)
+```
+**The best λ is**`r lambda.best`
+```{r}
+mod.lasso = glmnet(model.matrix(Apps~., data=College), College[, "Apps"], alpha=1)
+predict(mod.lasso, s=lambda.best, type="coefficients")
+```
+```{r}
+lasso.pred = predict(mod.lasso, newx=test.mat, s=lambda.best)
+lasso.mse<-mean((test[, "Apps"] - lasso.pred)^2)
+```
+**The MSE is** `r lasso.mse`, which is smaller than ridge regression and linear regression.
+
+**(e).**
+```{r}
+library(pls)
+set.seed(1)
+pcr.fit = pcr(Apps ~ ., data = train, scale = TRUE, validation = "CV")
+validationplot(pcr.fit, val.type="MSEP")
+```
+```{r}
+pcr.pred = predict(pcr.fit, test, ncomp=17)
+pcr.mse <- mean((test[, "Apps"] - c(pcr.pred))^2)
+```
+**M = 17 and the MSE for PCR is **`r pcr.mse`.
+
+**(f).**
+Fit a PLS model on the training set, with M chosen by cross-validation. Report the test error obtained, along with the value of M selected by cross-validation.
+```{r}
+pls.fit = plsr(Apps~., data=train, scale=TRUE, validation="CV")
+validationplot(pls.fit, val.type="MSEP")
+```
+```{R}
+pls.pred = predict(pls.fit, test, ncomp=15)
+pls.mse <- mean((test[, "Apps"] - c(pcr.pred))^2)
+```
+**M = 15 and the MSE for PCR is **`r pls.mse`.
+
+**(g).**
+Comment on the results obtained. How accurately can we pre- dict the number of college applications received? Is there much difference among the test errors resulting from these five ap- proaches?
+```{r}
+tot  <- sum((test$Apps - mean(test$Apps))^2)
+data.frame(method = c("lm", "Ridge", "Lasso", "PCR", "PLS"), 
+           test_MSE = c(lm.mse, ridge.mse, lasso.mse, pcr.mse, pls.mse), 
+           test_R2 = c(1 - sum((test$Apps - lm.pred)^2) / tot,
+                       1 - sum((test$Apps - ridge.pred)^2) / tot, 
+                       1 - sum((test$Apps - lasso.pred)^2) / tot, 
+                       1 - sum((test$Apps - pcr.pred)^2) / tot, 
+                       1 - sum((test$Apps - pls.pred)^2) / tot))
+```
+**The R-square value are all above 0.9 and their MSE are very close to each other**

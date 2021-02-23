@@ -143,6 +143,36 @@ mean(pred.glm != test$default)
 ### Q6
 We continue to consider the use of a logistic regression model to predict the probability of `default` using `income` and `balance` on the `Default` data set. In particular, we will now compute estimates for the standard errors of the `income` and `balance` logistic regression coefficients in two different ways: (1) using the bootstrap, and (2) using the standard formula for computing the standard errors in the `glm()` function. Do not forget to set a random seed before beginning your analysis.
 
+**(a).**
+Using the summary() and glm() functions, determine the estimated standard errors for the coefficients associated with income and balance in a multiple logistic regression model that uses both predictors.
+```{r}
+set.seed(1)
+attach(Default)
+fit.glm <- glm(default ~ income + balance, data = Default, family = "binomial")
+summary(fit.glm)
+```
+**The estimated standard errors for the coefficients associated with income and balance are** $4.985e-06$ and $2.274e-04$.
+
+**(b).**
+Write a function, `boot.fn()`, that takes as input the `Default` data set as well as an index of the observations, and that outputs the coefficient estimates for `income` and `balance` in the multiple logistic regression model.
+```{r}
+boot.fn <- function(data,index){
+    coef(glm(default ~ income + balance, family = "binomial", data = Default, subset = index))
+}
+```
+**(c).**
+Use the `boot()` function together with your `boot.fn()` function to estimate the standard errors of the logistic regression coefficients for `income` and `balance`.
+```{r}
+library(boot)
+boot(Default,boot.fn,1000)
+```
+**The estimated standard errors for the coefficients associated with income and balance are** $4.946e-06$ and $2.277e-04$.
+
+**(d).**
+Comment on the estimated standard errors obtained using the `glm()` function and using your bootstrap function.
+
+**The standard errors obtained from glm() and bootstrap are very close,so the bootstrap method is efficient.**
+
 ## Chapter 6
 
 ### Q1

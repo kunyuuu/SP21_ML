@@ -182,6 +182,173 @@ We perform best subset, forward stepwise, and backward stepwise selection on a s
 
 * The smallest training RSS will be for the model with best subset approach. 
 
+### Q8
+In this exercise, we will generate simulated data, and will then use this data to perform best subset selection.
+
+**(a)** Use the rnorm() function to generate a predictor X of length n = 100, as well as a noise vector $\epsilon$ of length n = 100.
+```{r}
+set.seed(123)
+X = rnorm(100)
+eps = rnorm(100)
+```
+
+**(b)** Generate a response vector Y of length n = 100 according to
+the model $Y = \beta_{0} + \beta_{1}X + \beta_{2}X^{2} + \beta_{3}X^{3} + \epsilon$,
+where $\beta_{0}, \beta_{1}, \beta_{2}, \beta_{3}$, are constants of your choice.
+We select $\beta_{0} = 2, \beta_{1} = 4, \beta_{2} = -5, \beta_{3} = -1$
+```{r}
+Y = 3 + 4 * X + -5 * X^2 + -2* X^3 + eps
+plot(X, Y)
+```
+
+**(c)** Use the regsubsets() function to perform best subset selection in order to choose the best model containing the predictors X,X2, . . .,X10. What is the best model obtained according to Cp, BIC, and adjusted R2? Show some plots to provide evidence for your answer, and report the coefficients of the best model obtained. Note you will need to use the data.frame() function to create a single data set containing both X and Y.
+```{r}
+library(leaps)
+data.full = data.frame(y = Y, x = X)
+model = regsubsets(y = Y,x = poly(X, 10, raw = T), nvmax = 10, method = "exhaustive")
+model_summary = summary(model)
+```
+
+```{r}
+plot(model_summary$cp, xlab="Subset Size", ylab="Best Subset Cp", type="l")
+points(which.min(model_summary$cp), model_summary$cp[which.min(model_summary$cp)], col="blue", pch=2, lwd=3)
+```
+```{r}
+plot(model_summary$bic, xlab="Subset Size", ylab="Best Subset BIC", type="l")
+points(which.min(model_summary$bic), model_summary$bic[which.min(model_summary$bic)], col="blue", pch=2, lwd=3)
+```
+```{r}
+plot(model_summary$adjr2, xlab="Subset Size", ylab="Best Subset AdjR2", type="l")
+points(which.max(model_summary$adjr2), model_summary$adjr2[which.max(model_summary$adjr2)], col="blue", pch=2, lwd=3)
+```
+```{r}
+model_summary$outmat
+```
+**Using Cp and BIC, the best size of subset is 3.**
+```{r}
+coef(model, id = 3)
+```
+**Using Adjusted R-Squared, the best size of subset is 7.**
+```{r}
+coef(model, id = 7)
+```
+
+**(d)** Repeat (c), using forward stepwise selection and also using backwards stepwise selection. How does your answer compare to the results in (c)?
+Forward stepwise selection
+```{r}
+model = regsubsets(y = Y,x = poly(X, 10, raw = T), nvmax = 10, method = "forward")
+model_summary = summary(model)
+```
+
+```{r}
+plot(model_summary$cp, xlab="Subset Size", ylab="Best Subset Cp", type="l")
+points(which.min(model_summary$cp), model_summary$cp[which.min(model_summary$cp)], col="blue", pch=2, lwd=3)
+```
+
+```{r}
+plot(model_summary$bic, xlab="Subset Size", ylab="Best Subset BIC", type="l")
+points(which.min(model_summary$bic), model_summary$bic[which.min(model_summary$bic)], col="blue", pch=2, lwd=3)
+```
+```{r}
+plot(model_summary$adjr2, xlab="Subset Size", ylab="Best Subset AdjR2", type="l")
+points(which.max(model_summary$adjr2), model_summary$adjr2[which.max(model_summary$adjr2)], col="blue", pch=2, lwd=3)
+```
+```{r}
+model_summary$outmat
+```
+**Using Cp and BIC, the best size of subset is 4.**
+```{r}
+coef(model, id = 4)
+```
+**Using Adjusted R-Squared, the best size of subset is 5.**
+```{r}
+coef(model, id = 5)
+```
+Backwards stepwise selection
+```{r}
+model = regsubsets(y = Y,x = poly(X, 10, raw = T), nvmax = 10, method = "backward")
+model_summary = summary(model)
+```
+
+```{r}
+plot(model_summary$cp, xlab="Subset Size", ylab="Best Subset Cp", type="l")
+points(which.min(model_summary$cp), model_summary$cp[which.min(model_summary$cp)], col="blue", pch=2, lwd=3)
+```
+
+```{r}
+plot(model_summary$bic, xlab="Subset Size", ylab="Best Subset BIC", type="l")
+points(which.min(model_summary$bic), model_summary$bic[which.min(model_summary$bic)], col="blue", pch=2, lwd=3)
+```
+```{r}
+plot(model_summary$adjr2, xlab="Subset Size", ylab="Best Subset AdjR2", type="l")
+points(which.max(model_summary$adjr2), model_summary$adjr2[which.max(model_summary$adjr2)], col="blue", pch=2, lwd=3)
+```
+```{r}
+model_summary$outmat
+```
+Using Cp and BIC, the best size of subset is 3.
+```{r}
+coef(model, id = 3)
+```
+Using Adjusted R-Squared, the best size of subset is 7.
+```{r}
+coef(model, id = 7)
+```
+**Different selection methods and metrics result in different subsets of the predictors being selected. **
+
+**(e)** Now fit a lasso model to the simulated data, again using X,X2,..., X10 as predictors. Use cross-validation to select the optimal value of λ. Create plots of the cross-validation error as a function of λ. Report the resulting coefficient estimates, and discuss the results obtained.
+```{r}
+library(glmnet)
+set.seed(234)
+xmat = model.matrix(y ~ poly(x, 10, raw = T), data = data.full)[, -1]
+mod.lasso = cv.glmnet(xmat, Y, alpha = 1)
+best.lambda = mod.lasso$lambda.min
+best.lambda
+```
+```{r}
+plot(mod.lasso)
+```
+```{r}
+best.model = glmnet(xmat, Y, alpha = 1)
+predict(best.model, s = best.lambda, type = "coefficients")
+```
+**Lasso also picks X1, X2, X7. It also picks X6, X7, X8, X9 with negligible coefficient.**
+
+**(f)** Now generate a response vector Y according to the model Y = β0 + β7X7 + e, and perform best subset selection and the lasso. Discuss the results obtained.
+We select $\beta_{0} = 2, \beta_{7} = 8$
+```{r}
+Y = 10 + 5*X^7 + eps
+```
+```{r}
+data.full = data.frame(y = Y, x = X)
+mod.full = regsubsets(y ~ poly(x, 10, raw = T), data = data.full, nvmax = 10)
+mod.summary = summary(mod.full)
+```
+```{r}
+which.min(mod.summary$cp)
+```
+```{r}
+which.min(mod.summary$bic)
+```
+```{r}
+which.min(mod.summary$adjr2)
+```
+```{r}
+coefficients(mod.full, id = 1)
+```
+**We can see cp and BIC have the most accurate 1-variable model, but Adjust R2 pick additional variables.**
+```{r}
+xmat = model.matrix(y ~ poly(x, 10, raw = T), data = data.full)[, -1]
+mod.lasso = cv.glmnet(xmat, Y, alpha = 1)
+best.lambda = mod.lasso$lambda.min
+best.lambda
+```
+```{r}
+best.model = glmnet(xmat, Y, alpha = 1)
+predict(best.model, s = best.lambda, type = "coefficients")
+```
+**We can see lasso also have the most accurate 1-variable model.**
+
 ### Q9
 In this exercise, we will predict the number of applications received using the other variables in the `College` data set.
 

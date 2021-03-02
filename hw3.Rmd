@@ -1,0 +1,44 @@
+---
+title: "PH.140.644_HW3"
+author: "Kunyu An"
+output:
+  pdf_document:
+    toc_depth: 2
+    latex_engine : xelatex
+  html_document:
+    toc_depth: '2'
+    df_print: paged
+header-includes:
+- \usepackage{amsmath,latexsym,amsfonts,amsthm,cleveref}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+```{r load_libraries,include=FALSE}
+library(ISLR)
+library(MASS) 
+library(class)
+```
+
+## Chapter 10
+
+### Q8
+In Section 10.2.3, a formula for calculating PVE was given in Equa- tion 10.8. We also saw that the PVE can be obtained using the `sdev` output of the `prcomp()` function.
+
+On the USArrests data, calculate PVE in two ways:
+
+**(a)** Using the sdev output of the prcomp() function, as was done in
+Section 10.2.3.
+
+
+
+**(b)** By applying Equation 10.8 directly. That is, use the prcomp() function to compute the principal component loadings. Then, use those loadings in Equation 10.8 to obtain the PVE.
+
+
+
+### Q9
+
+### Q11

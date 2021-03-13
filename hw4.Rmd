@@ -1,0 +1,159 @@
+---
+title: "PH.140.644_HW3"
+author: "Kunyu An"
+output:
+  html_document:
+    toc_depth: '2'
+    df_print: paged
+  pdf_document:
+    toc_depth: 2
+    latex_engine : xelatex
+header-includes:
+- \usepackage{amsmath,latexsym,amsfonts,amsthm,cleveref}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+```{r load_libraries,include=FALSE}
+library(tidyverse)
+library(ISLR)
+library(MASS) 
+library(class)
+```
+
+## Chapter 9
+
+### Q7
+In this problem, you will use support vector approaches in order to predict whether a given car gets high or low gas mileage based on the `Auto` data set.
+
+**(a)** Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage below the median.
+
+```{r}
+
+```
+
+**(b)**
+
+**(c)**
+
+**(d)**
+
+### Q8
+
+## Chapter 8
+This problem involves the `OJ` data set which is part of the ISLR package.
+
+**(a)**
+
+**(b)**
+
+**(c)**
+
+**(d)**
+
+**(e)**
+
+### Q10
+We now use boosting to predict Salary in the Hitters data set.
+
+**(a)** Remove the observations for whom the salary information is unknown, and then log-transform the salaries.
+
+```{r}
+data("Hitters")
+attach(Hitters)
+Hitters <- Hitters[!is.na(Hitters$Salary),]
+Hitters$Salary <- log(Hitters$Salary)
+```
+
+**(b)** Create a training set consisting of the first 200 observations, and a test set consisting of the remaining observations.
+
+```{r}
+train <- 1:200
+Hitters.train <- Hitters[train,]
+Hitters.test <- Hitters[-train,]
+```
+
+**(c)** Perform boosting on the training set with 1,000 trees for a range of values of the shrinkage parameter λ. Produce a plot with different shrinkage values on the x-axis and the corresponding training set MSE on the y-axis.
+
+```{r}
+library(gbm)
+set.seed(1)
+pows <- seq(-10, -0.2, by = 0.1)
+lambdas <- 10^pows
+train.err <- rep(NA, length(lambdas))
+for (i in 1:length(lambdas)) {
+    boost.hitters = gbm(Salary ~ ., data = Hitters.train, distribution = "gaussian", n.trees = 1000, shrinkage = lambdas[i])
+    pred.train <- predict(boost.hitters, Hitters.train, n.trees = 1000)
+    train.err[i] <- mean((pred.train - Hitters.train$Salary)^2)
+}
+plot(lambdas, train.err, type = "l", xlab = "Shrinkage values", ylab = "Training MSE")
+```
+
+**(d)** Produce a plot with different shrinkage values on the x-axis and the corresponding test set MSE on the y-axis.
+
+```{r}
+set.seed(1)
+test.err <- rep(NA, length(lambdas))
+for (i in 1:length(lambdas)) {
+    boost.hitters <- gbm(Salary ~ ., data = Hitters.train, distribution = "gaussian", n.trees = 1000, shrinkage = lambdas[i])
+    yhat <- predict(boost.hitters, Hitters.test, n.trees = 1000)
+    test.err[i] <- mean((yhat - Hitters.test$Salary)^2)
+}
+
+matplot(x=lambdas,y=cbind(train.err,test.err),type="l",xlab="lambda", ylab="MSE")
+legend("topright",legend = c("Train","Test"),col=c("black","red"),lty=c(1,2))
+abline(v = lambdas[which.min(test.err)],col="blue",lty=2,lwd=.5)
+
+print(paste0("Minimum Test MSE: ", min(test.err)))
+print(paste0("Best lambda Value: ", lambdas[which.min(test.err)]))
+```
+
+
+**(e)** Produce a plot with different shrinkage values on the x-axis and the corresponding test set MSE on the y-axis.
+
+```{r}
+library(glmnet)
+#linear
+fit1 <- lm(Salary ~ ., data = Hitters.train)
+pred1 <- predict(fit1, Hitters.test)
+lm.mse = mean((pred1 - Hitters.test$Salary)^2)
+
+#ridge
+x <- model.matrix(Salary ~ ., data = Hitters.train)
+x.test <- model.matrix(Salary ~ ., data = Hitters.test)
+y <- Hitters.train$Salary
+fit2 <- glmnet(x, y, alpha = 0)
+pred2 <- predict(fit2, s = 0.01, newx = x.test)
+ridge.mse = mean((pred2 - Hitters.test$Salary)^2)
+
+
+print(paste0("Boost Test MSE: ", min(test.err)))
+print(paste0("Linear Regression Test MSE: ", lm.mse))
+print(paste0("Ridge Test MSE: ", ridge.mse))
+```
+
+
+**(f)** Which variables appear to be the most important predictors in the boosted model?
+
+```{r}
+library(gbm)
+boost.hitters <- gbm(Salary ~ ., data = Hitters.train, distribution = "gaussian", n.trees = 1000, shrinkage = lambdas[which.min(test.err)])
+summary(boost.hitters)
+```
+
+**The variable “CAtBat” is the most important.**
+
+**(g)** Now apply bagging to the training set. What is the test set MSE for this approach?
+
+```{r}
+library(randomForest)
+set.seed(1)
+bag.hitters <- randomForest(Salary ~ ., data = Hitters.train, mtry = 19, ntree = 500)
+yhat.bag <- predict(bag.hitters, newdata = Hitters.test)
+mean((yhat.bag - Hitters.test$Salary)^2)
+```
+
+**The test MSE for bagging is 0.23**

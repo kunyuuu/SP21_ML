@@ -32,29 +32,103 @@ In this problem, you will use support vector approaches in order to predict whet
 **(a)** Create a binary variable that takes on a 1 for cars with gas mileage above the median, and a 0 for cars with gas mileage below the median.
 
 ```{r}
-
+attach(Auto)
+mpg01 <- ifelse( mpg > median(mpg), yes = 1,  no = 0)
+Auto$mpg01 <- as.factor(mpg01)
 ```
 
-**(b)**
+**(b)** Fit a support vector classifier to the data with various values of cost, in order to predict whether a car gets high or low gas mileage. Report the cross-validation errors associated with different values of this parameter. Comment on your results.
 
-**(c)**
+```{r}
+library("e1071")
+set.seed(1)
+tune.out <- tune(svm, mpg01 ~ ., data = Auto, kernel = "linear", ranges = list(cost = c(0.01, 0.1, 1, 5, 10, 100, 1000)))
+summary(tune.out)
+```
+**When cost = 1, we can get the best result.**
 
-**(d)**
+**(c)** Now repeat (b), this time using SVMs with radial and polynomial basis kernels, with different values of gamma and degree and cost. Comment on your results.
+
+*radial kernel: *
+```{r}
+set.seed(1)
+tune.out <- tune(svm, mpg01 ~ ., data = Auto, kernel = "radial", ranges = list(cost = c(0.1, 1, 5, 10, 100), gamma = c(0.01, 0.1, 1, 5, 10, 100)))
+summary(tune.out)
+```
+**For the radial kernel, the best result is when cost = 100 with gamma = 0.01**
+
+*polynomial kernel: *
+```{r}
+set.seed(1)
+tune.out <- tune(svm, mpg01 ~ ., data = Auto, kernel = "polynomial", ranges = list(cost = c(0.1, 1, 5, 10, 100), degree = c(2, 3, 4)))
+summary(tune.out)
+```
+**For the polynomial kernel, the best result is when cost = 100 with degree of 2**
+
+**(d)** Make some plots to back up your assertions in (b) and (c).
+```{r}
+svm.linear = svm(mpg01 ~ ., data = Auto, kernel = "linear", cost = 1)
+svm.radial = svm(mpg01 ~ ., data = Auto, kernel = "radial", cost = 100, gamma = 0.01)
+svm.poly = svm(mpg01 ~ ., data = Auto, kernel = "polynomial", cost = 100, degree = 2)
+```
+*For linear kernel:*
+```{r out.width=c('50%', '50%', '50%'), fig.show='hold'}
+plot(svm.linear, Auto, mpg ~ horsepower )
+plot(svm.linear, Auto, mpg ~ year )
+plot(svm.linear, Auto, mpg ~ displacement)
+```
+*For radial kernel:*
+```{r out.width=c('50%', '50%', '50%'), fig.show='hold'}
+plot(svm.radial, Auto, mpg ~ horsepower )
+plot(svm.radial, Auto, mpg ~ year )
+plot(svm.radial, Auto, mpg ~ displacement )
+```
+
+*For polynomial kernel*
+```{r out.width=c('50%', '50%', '50%'), fig.show='hold'}
+plot(svm.poly, Auto, mpg ~ horsepower )
+plot(svm.poly, Auto, mpg ~ year )
+plot(svm.poly, Auto, mpg ~ displacement )
+```
 
 ### Q8
 
 ## Chapter 8
 This problem involves the `OJ` data set which is part of the ISLR package.
 
-**(a)**
+**(a)** Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations.
+```{r}
+set.seed(1)
+attach(OJ)
+idx <- sample(nrow(OJ), 800)
+train <- OJ[idx, ]
+test <- OJ[-idx, ]
+```
 
-**(b)**
+**(b)** Fit a support vector classifier to the training data using cost=0.01, with Purchase as the response and the other variables as predictors. Use the summary() function to produce summary statistics, and describe the results obtained.
+```{r}
+svm.linear <- svm(Purchase ~ ., data = train, kernel = "linear", cost = 0.01)
+summary(svm.linear)
+```
 
-**(c)**
+**(c)** What are the training and test error rates?
+```{r}
+train.pred <- predict(svm.linear, train)
+table(train$Purchase, train.pred)
+```
+```{r}
+test.pred <- predict(svm.linear, test)
+table(test$Purchase, test.pred)
+```
 
-**(d)**
+**(d)** Use the tune() function to select an optimal cost. Consider values in the range 0.01 to 10.
+```{r}
+set.seed(1)
+tune.out <- tune(svm, Purchase ~ ., data = train, kernel = "linear", ranges = list(cost = 10^seq(-2, 1, by = 0.25)))
+summary(tune.out)
+```
 
-**(e)**
+**(e)** Compute the training and test error rates using this new value for cost.
 
 ### Q10
 We now use boosting to predict Salary in the Hitters data set.

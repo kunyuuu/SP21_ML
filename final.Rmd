@@ -74,21 +74,20 @@ For this part, I'm using three kinds of classification models: SVM and Logistic 
 
 ```{r}
 library("e1071")
-tune.out <- tune(svm, mortstat~ ., data = data.train, kernel = "linear", ranges = list(cost = 10^seq(-2, 1, by = 0.25)))
+tune.out <- tune(svm, mortstat ~ ., data = data.train, kernel = "linear", ranges = list(cost = 10^seq(-2, 1, by = 0.25)))
 summary(tune.out)
 ```
 
 - Compute the sensitivity and specificity using the best cost.
 
 ```{r}
-svm.linear = svm(mortstat ~ ., kernel = "linear", data = data.train, cost =tune.out$best.parameters$cost)
+svm.linear = svm(as.factor(mortstat) ~ ., kernel = "linear", data = data.train, cost =tune.out$best.parameters$cost)
 test.pred = predict(svm.linear, data.test)
-test.pred <- ifelse(test.pred > 0.5, yes = 1,  no = 0)
 table(data.test$mortstat, test.pred)
 ```
 
 According to the table above, we can compute the sensitivity & specificity.
-- Sensitivity : TP / TP + FN = $338 / (338 + 61) =$ `r 338 / (338 + 61)`
-- Specificity : TN / FP + TN = $7/ (7 + 6) =$ `r 7/ (7 + 6)`
+- Sensitivity : TP / TP + FN = $344 / (344 + 67) =$ `r 344 / (344 + 67)`
+- Specificity : TN / FP + TN = $1/ (1 + 0) =$ `r 1/ (1 + 0)`
 
 #### Logistic Regression: 

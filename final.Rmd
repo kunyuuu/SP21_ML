@@ -91,3 +91,10 @@ According to the table above, we can compute the sensitivity & specificity.
 - Specificity : TN / FP + TN = $1/ (1 + 0) =$ `r 1/ (1 + 0)`
 
 #### Logistic Regression: 
+```{r}
+fit.glm = glm(as.factor(mortstat) ~ . , data = data.train, family = "binomial")
+probs.glm = predict(fit.glm, newdata = data.test)
+test.pred<-ifelse(probs.glm> 0.5, yes = 1,  no = 0)
+f<-table(data.test$mortstat,test.pred)
+f
+```

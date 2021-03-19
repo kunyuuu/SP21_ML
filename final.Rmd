@@ -45,7 +45,7 @@ data <- nhanes2003_2004[is.na(nhanes2003_2004$mortstat)!=TRUE,]
 ```
 
 ```{r}
-data1 <- data %>% filter(RIDAGEEX >= 600)
+data1 <- data %>% filter(as.numeric(RIDAGEEX) >= 600)
 ```
 
 ```{r}

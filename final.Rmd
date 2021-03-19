@@ -31,7 +31,6 @@ In this project, my goal is to analyze `NHANES 2003-2004` data and build a model
 We first load the data set. There are 10122 observations and 813 variables.
 ```{r}
 load(file = "nhanes2003-2004.Rda")
-head(nhanes2003_2004$RIDAGEEX)
 ```
 
 Now we are going to make some modification on our data.

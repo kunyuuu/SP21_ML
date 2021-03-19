@@ -54,3 +54,12 @@ data.predictors <- data[,predictors]
 ```{r}
 data.mortstat <- data[,"mortstat"]
 ```
+
+Now we can split the data into training and testing set. I decided to take 70% as training set and 30% as testing set.
+
+```{r}
+set.seed(1)
+```
+
+### Fitting the model
+

@@ -24,18 +24,28 @@ library(MASS)
 library(class)
 ```
 
-In this project, my goal is to analyse `NHANES 2003-2004` data and build a model to predict the mortality status for participants 50 years and older. I plan to divid this project into three parts. The first is the data preprocessing part, in which I will clean the data, determin the predictors as well as split the training and testing sets. The second part is to build a classification model to do the prediction. Finally, I will explore and preforme some statistical analysis on the results.
+In this project, my goal is to analyze `NHANES 2003-2004` data and build a model to predict the mortality status for participants 50 years and older. I plan to divide this project into three parts. The first is the data pre-processing part, in which I will clean the data, determine the predictors as well as split the training and testing sets. The second part is to build a classification model to do the prediction. Finally, I will explore and preform some statistical analysis on the results.
 
 ### Data Preprocessing
 
-- we first load the dataset.
+We first load the data set. There are 10122 observations and 813 variables.
 ```{r}
 load(file = "nhanes2003-2004.Rda")
+head(nhanes2003_2004$RIDAGEEX)
 ```
+
+Now we are going to make some modification on our data.
+
+- First I dropped out the data with no mortality status.
+
+- The variable `RIDAGEEX` tells use the age in months at the time of examination. Since our goal is to predict the mortality status for participants over 50 years old, we are looking for the data with `RIDAGEEX` greater than $50 * 12 =$ 600 months. 
+
+```{r}
+data <- nhanes2003_2004[is.na(nhanes2003_2004$mortstat)!=TRUE,]
+```
+
+We certainly do not want to use all 813 variables, below are the most informative variables that will be used as predictors in this project.
 
 ```{r}
 predictors <- c("RIDAGEYR", "RIAGENDR", "BPQ010", "BPQ060", "SMQ040", "DIQ010", "DIQ050", "DIQ090", "MCQ010", "MCQ053", "MCQ160A", "MCQ160B", "MCQ160K", "MCQ160L", "BMXWAIST", "MCQ160M", "MCQ220", "MCQ245A", "MCQ250A", "MCQ250B", "MCQ250C", "MCQ250E", "MCQ250F", "MCQ250G", "MCQ265", "SSQ011", "SSQ051", "WHQ030", "WHQ040", "LBXRDW", "HSD010", "BPXPULS", "BPXML1", "VIQ200", "BMXBMI", "BPXSY1", "BPXDI1")
-```
-```{r}
-above50 <- nhanes2003_2004[is.na(nhanes2003_2004$mortstat)!=TRUE,]
 ```

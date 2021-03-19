@@ -22,6 +22,7 @@ library(tidyverse)
 library(ISLR)
 library(MASS) 
 library(class)
+library(randomForest)
 ```
 
 In this project, my goal is to analyze `NHANES 2003-2004` data and build a model to predict the mortality status for participants 50 years and older. I plan to divide this project into three parts. The first is the data pre-processing part, in which I will clean the data, determine the predictors as well as split the training and testing sets. The second part is to build a classification model to do the prediction. Finally, I will explore and preform some statistical analysis on the results.
@@ -49,6 +50,17 @@ We certainly do not want to use all 813 variables, below are the most informativ
 ```{r}
 labels <- c("mortstat", "RIDAGEYR", "RIAGENDR", "BPQ010", "BPQ060", "DIQ010", "DIQ050", "DIQ090", "MCQ010", "MCQ053", "MCQ160A", "MCQ160B", "MCQ160K", "MCQ160L", "BMXWAIST", "MCQ160M", "MCQ220", "MCQ245A", "MCQ250A", "MCQ250B", "MCQ250C", "MCQ250E", "MCQ250F", "MCQ250G", "MCQ265", "SSQ011", "SSQ051", "WHQ030", "WHQ040", "LBXRDW", "HSD010", "BPXPULS", "BPXML1", "VIQ200", "BMXBMI", "BPXSY1", "BPXDI1")
 data <- data[,labels]
+data <- na.omit(data)
+```
+```{r}
+labels2 <- c("RIDAGEYR", "BMXWAIST","LBXRDW", "BPXML1", "BMXBMI", "BPXSY1", "BPXDI1")
+for (lc in labels2) {
+  col_data = data[,lc]
+  d_min = min(as.numeric(col_data))
+  d_max = max(as.numeric(col_data))
+  col_breaks <- seq(d_min, d_max, length=11)
+  data[,lc] = cut(as.numeric(col_data),breaks=col_breaks,labels=c(1:10))
+}
 ```
 
 Now we can split the data into training and testing set. I decided to take 70% as training set and 30% as testing set.
@@ -70,4 +82,9 @@ train.mortstat <- data.train[,labels[1]]
 
 test.predictor <- data.test[,labels[-1]]
 test.mortstat <- data.test[,labels[1]]
+```
+
+#### Random Forest
+```{r}
+mortstat_randomforest <- randomForest(as.factor(mortstat) ~ ., data = data.train, mtry = 19, ntree = 500)
 ```

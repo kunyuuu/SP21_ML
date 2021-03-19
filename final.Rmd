@@ -1,0 +1,36 @@
+---
+title: "PH.140.644_HW3"
+author: "Kunyu An"
+output:
+  pdf_document:
+    toc_depth: 2
+    latex_engine : xelatex
+  html_document:
+    toc_depth: '2'
+    df_print: paged
+header-includes:
+- \usepackage{amsmath,latexsym,amsfonts,amsthm,cleveref}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+```{r load_libraries,include=FALSE}
+library(tidyverse)
+library(ISLR)
+library(MASS) 
+library(class)
+```
+
+In this project, my goal is to analyse `NHANES 2003-2004` data and build a model to predict the mortality status for participants 50 years and older. I plan to divid this project into three parts. The first is the data preprocessing part, in which I will clean the data, determin the predictors as well as split the training and testing sets. The second part is to build a classification model to do the prediction. Finally, I will explore and preforme some statistical analysis on the results.
+
+### Data Preprocessing
+
+- we first load the dataset.
+```{r}
+load(file = "nhanes2003-2004.Rda")
+```
+
+

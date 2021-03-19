@@ -90,11 +90,28 @@ According to the table above, we can compute the sensitivity & specificity.
 - Sensitivity : TP / TP + FN = $344 / (344 + 67) =$ `r 344 / (344 + 67)`
 - Specificity : TN / FP + TN = $1/ (1 + 0) =$ `r 1/ (1 + 0)`
 
+
 #### Logistic Regression: 
+
 ```{r}
+labels2 <- c("RIDAGEYR", "BMXWAIST","LBXRDW", "BPXML1", "BMXBMI", "BPXSY1", "BPXDI1")
+for (lc in labels2) {
+  col_data = data[,lc]
+  d_min = min(as.numeric(col_data))
+  d_max = max(as.numeric(col_data))
+  col_breaks <- seq(d_min, d_max, length=9)
+  data[,lc] = cut(as.numeric(col_data),breaks=col_breaks,labels=c(1:8))
+}
+set.seed(1)
+train <- sample(nrow(data),0.70*nrow(data))
+data.train <- data[train,]
+data.test <- data[-train,]
 fit.glm = glm(as.factor(mortstat) ~ . , data = data.train, family = "binomial")
 probs.glm = predict(fit.glm, newdata = data.test)
 test.pred<-ifelse(probs.glm> 0.5, yes = 1,  no = 0)
 f<-table(data.test$mortstat,test.pred)
-f
 ```
+
+According to the table above, we can compute the sensitivity & specificity.
+- Sensitivity : TP / TP + FN = $307 / (307 + 21) =$ `r 307 / (307 + 21)`
+- Specificity : TN / FP + TN = $51/ (51 + 14) =$ `r 51/ (51 + 14)`

@@ -42,19 +42,14 @@ Now we are going to make some modification on our data.
 
 ```{r}
 data <- nhanes2003_2004[is.na(nhanes2003_2004$mortstat)!=TRUE,]
-```
-
-```{r}
-data1 <- data %>% filter(as.numeric(RIDAGEEX) >= 600)
-```
-
-```{r}
-data1$RIDAGEEX
+data %>% filter(as.numeric(RIDAGEEX) >= 600)
 ```
 
 We certainly do not want to use all 813 variables, below are the most informative variables that will be used as predictors in this project.
 
 ```{r}
 predictors <- c("RIDAGEYR", "RIAGENDR", "BPQ010", "BPQ060", "SMQ040", "DIQ010", "DIQ050", "DIQ090", "MCQ010", "MCQ053", "MCQ160A", "MCQ160B", "MCQ160K", "MCQ160L", "BMXWAIST", "MCQ160M", "MCQ220", "MCQ245A", "MCQ250A", "MCQ250B", "MCQ250C", "MCQ250E", "MCQ250F", "MCQ250G", "MCQ265", "SSQ011", "SSQ051", "WHQ030", "WHQ040", "LBXRDW", "HSD010", "BPXPULS", "BPXML1", "VIQ200", "BMXBMI", "BPXSY1", "BPXDI1")
+
+data %>% select(predictors)
 ```
 

@@ -47,12 +47,8 @@ data <- data %>% filter(as.numeric(RIDAGEEX) >= 600)
 We certainly do not want to use all 813 variables, below are the most informative variables that will be used as predictors in this project.
 
 ```{r}
-predictors <- c("RIDAGEYR", "RIAGENDR", "BPQ010", "BPQ060", "DIQ010", "DIQ050", "DIQ090", "MCQ010", "MCQ053", "MCQ160A", "MCQ160B", "MCQ160K", "MCQ160L", "BMXWAIST", "MCQ160M", "MCQ220", "MCQ245A", "MCQ250A", "MCQ250B", "MCQ250C", "MCQ250E", "MCQ250F", "MCQ250G", "MCQ265", "SSQ011", "SSQ051", "WHQ030", "WHQ040", "LBXRDW", "HSD010", "BPXPULS", "BPXML1", "VIQ200", "BMXBMI", "BPXSY1", "BPXDI1")
-data.predictors <- data[,predictors]
-```
-
-```{r}
-data.mortstat <- data[,"mortstat"]
+labels <- c("mortstat", "RIDAGEYR", "RIAGENDR", "BPQ010", "BPQ060", "DIQ010", "DIQ050", "DIQ090", "MCQ010", "MCQ053", "MCQ160A", "MCQ160B", "MCQ160K", "MCQ160L", "BMXWAIST", "MCQ160M", "MCQ220", "MCQ245A", "MCQ250A", "MCQ250B", "MCQ250C", "MCQ250E", "MCQ250F", "MCQ250G", "MCQ265", "SSQ011", "SSQ051", "WHQ030", "WHQ040", "LBXRDW", "HSD010", "BPXPULS", "BPXML1", "VIQ200", "BMXBMI", "BPXSY1", "BPXDI1")
+data <- data[,labels]
 ```
 
 Now we can split the data into training and testing set. I decided to take 70% as training set and 30% as testing set.
@@ -63,3 +59,15 @@ set.seed(1)
 
 ### Fitting the model
 
+```{r}
+train <- 1:1350
+data.train <- data[train,]
+data.test <- data[-train,]
+```
+```{r}
+train.predictor <- data.train[,labels[-1]]
+train.mortstat <- data.train[,labels[1]]
+
+test.predictor <- data.test[,labels[-1]]
+test.mortstat <- data.test[,labels[1]]
+```
